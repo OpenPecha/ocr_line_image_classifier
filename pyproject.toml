@@ -16,7 +16,17 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
+dependencies = [
+    "Levenshtein==0.25.1",
+    "numpy==1.26.4",
+    "pandas==2.2.2",
+    "pytesseract==0.3.10",
+    "python-Levenshtein==0.25.1",
+    "tqdm==4.66.4",
+    "image_to_text@git+https://github.com/OpenPecha/image_to_text@main",
 
+
+]
 [project.optional-dependencies]
 dev = [
     "pytest",
