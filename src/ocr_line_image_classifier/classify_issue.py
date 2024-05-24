@@ -45,7 +45,7 @@ def save_transcripts(
 
 
 def group_images_by_similarity(
-    updated_csv_path, image_dir, output_dir, similarity_threshold=0.9
+    updated_csv_path, image_dir, output_dir, similarity_threshold
 ):
     """
     Group images by similarity score and save them in separate folders.
