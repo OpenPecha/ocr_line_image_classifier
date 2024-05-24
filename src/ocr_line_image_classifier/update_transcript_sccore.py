@@ -13,7 +13,7 @@ from ocr_line_image_classifier.checkpoint import (
     save_corrupted_files,
 )
 
-OUTPUT_DIR = Path("./data/updated_transcripts")
+OUTPUT_DIR = Path("./tests/test_data/updated_transcript")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 
@@ -132,6 +132,7 @@ def process_batches_parallel(image_folder, transcript_folder, num_processes=4):
 
 
 if __name__ == "__main__":
+
     image_folder = "./data/norbuketaka/images"
     transcript_folder = "./data/norbuketaka/transcript"
     num_processes = 4
