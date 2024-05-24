@@ -3,7 +3,9 @@ from pathlib import Path
 
 import pandas as pd
 
-from ocr_line_image_classifier.classify_issue_in_batch import group_images_by_similarity
+from ocr_line_image_classifier.classify_issue_in_line_image import (
+    group_images_by_similarity,
+)
 
 
 # Test for group_images_by_similarity
