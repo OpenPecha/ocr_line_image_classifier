@@ -6,7 +6,6 @@ import pandas as pd
 from ocr_line_image_classifier.classify_issue import group_images_by_similarity
 
 
-# Test for group_images_by_similarity
 def test_group_images_by_similarity():
     image_dir = Path("tests/test_data/images")
     output_dir = Path("tests/test_data/filtered_images")
@@ -44,6 +43,16 @@ def test_group_images_by_similarity():
     # Load the actual results
     high_transcript_df = pd.read_csv(high_similarity_csv)
     low_transcript_df = pd.read_csv(low_similarity_csv)
+
+    # Debug print statements
+    print("Actual High Similarity Transcript DataFrame:")
+    print(high_transcript_df)
+    print("Expected High Similarity Transcript DataFrame:")
+    print(expected_high_similarity_df)
+    print("Actual Low Similarity Transcript DataFrame:")
+    print(low_transcript_df)
+    print("Expected Low Similarity Transcript DataFrame:")
+    print(expected_low_similarity_df)
 
     # Verify the high similarity transcript data
     pd.testing.assert_frame_equal(high_transcript_df, expected_high_similarity_df)
