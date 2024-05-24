@@ -18,15 +18,15 @@ classifiers = [
 ]
 dependencies = [
     "Levenshtein==0.25.1",
-    "numpy==1.26.4",
-    "pandas==2.2.2",
+    "numpy",
+    "pandas",
     "pytesseract==0.3.10",
     "python-Levenshtein==0.25.1",
     "tqdm==4.66.4",
-    "image_to_text@git+https://github.com/OpenPecha/image_to_text@main",
-
+    "line-image-to-text @ git+https://github.com/OpenPecha/image-to-text.git@main",
 
 ]
+
 [project.optional-dependencies]
 dev = [
     "pytest",
