@@ -23,8 +23,8 @@ def test_group_images_by_similarity():
         updated_csv_path, image_dir, output_dir, similarity_threshold=0.90
     )
 
-    high_similarity_dir = output_dir / "image_without_issue"
-    low_similarity_dir = output_dir / "image_with_issue"
+    high_similarity_dir = output_dir / "valid_data_without_issue"
+    low_similarity_dir = output_dir / "valid_data_with_issue"
 
     high_similarity_csv = high_similarity_dir / "transcript" / "transcript.csv"
     low_similarity_csv = low_similarity_dir / "transcript" / "transcript.csv"
