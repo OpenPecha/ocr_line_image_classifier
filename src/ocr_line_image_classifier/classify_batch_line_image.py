@@ -1,46 +1,37 @@
-import shutil
+import json
 from pathlib import Path
 
 import pandas as pd
 
-
-def create_output_directories(output_dir):
-    """Create output directories for valid data with and without issues."""
-    valid_data_without_issue_dir = output_dir / "valid_data_without_issue"
-    valid_data_with_issue_dir = output_dir / "valid_data_with_issue"
-
-    (valid_data_without_issue_dir / "images").mkdir(parents=True, exist_ok=True)
-    (valid_data_without_issue_dir / "transcript").mkdir(parents=True, exist_ok=True)
-    (valid_data_with_issue_dir / "images").mkdir(parents=True, exist_ok=True)
-    (valid_data_with_issue_dir / "transcript").mkdir(parents=True, exist_ok=True)
-
-    return valid_data_without_issue_dir, valid_data_with_issue_dir
-
-
-def classify_transcripts(transcript_df, similarity_threshold):
-    """Classify transcript rows based on similarity score."""
-    high_similarity_rows = transcript_df[
-        transcript_df["similarity_score"] >= similarity_threshold
-    ]
-    low_similarity_rows = transcript_df[
-        transcript_df["similarity_score"] < similarity_threshold
-    ]
-    return high_similarity_rows, low_similarity_rows
+from ocr_line_image_classifier.metrics import (
+    classify_transcripts,
+    evaluate_transcripts,
+    save_evaluation_metrics,
+)
+from ocr_line_image_classifier.utils import copy_images, create_output_directories
 
 
 def copy_images_and_save_transcript(image_dir, transcript_rows, output_dir):
     """Copy images to the target directory and save transcript."""
-    image_output_dir = output_dir / "images"
     transcript_output_dir = output_dir / "transcript"
 
-    for index, row in transcript_rows.iterrows():
-        image_file = image_dir / row["line_image_id"]
-        if image_file.exists():
-            shutil.copy(image_file, image_output_dir)
+    copy_images(transcript_rows, image_dir, output_dir)
 
     transcript_file = transcript_output_dir / "transcript.csv"
     transcript_rows.to_csv(
         transcript_file, mode="a", header=not transcript_file.exists(), index=False
+    )
+    transcript_file_json = transcript_output_dir / "transcript.json"
+    if transcript_file_json.exists():
+        with open(transcript_file_json, encoding="utf-8") as f:
+            existing_data = json.load(f)
+        existing_df = pd.DataFrame(existing_data)
+        updated_df = pd.concat([existing_df, transcript_rows], ignore_index=True)
+    else:
+        updated_df = transcript_rows
+
+    updated_df.to_json(
+        transcript_file_json, orient="records", force_ascii=False, indent=4
     )
 
 
@@ -60,6 +51,17 @@ def process_updated_batches(
             transcript_df, similarity_threshold
         )
 
+        stats = []
+        stats = evaluate_transcripts(transcript_df, similarity_threshold)
+        evaluation_file = (
+            output_folder.parent
+            / "stats"
+            / batch_name
+            / f"{batch_name}_evaluation_{similarity_threshold}.csv"
+        )
+        evaluation_file.parent.mkdir(parents=True, exist_ok=True)
+        save_evaluation_metrics(stats, evaluation_file)
+
         if not high_similarity_rows.empty:
             copy_images_and_save_transcript(
                 image_folder / batch_name,
@@ -76,9 +78,9 @@ def process_updated_batches(
 
 if __name__ == "__main__":
     image_folder = Path("./data/norbuketaka/images")
-    transcript_folder = Path("./data/norbuketaka/updated_transcripts")
+    transcript_folder = Path("./data/norbuketaka/updated_transcript")
     output_folder = Path("./data/norbuketaka/filtered_images")
-    similarity_threshold = 0.85
+    similarity_threshold = 0.95
     process_updated_batches(
         image_folder, transcript_folder, output_folder, similarity_threshold
     )

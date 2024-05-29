@@ -12,6 +12,7 @@ from ocr_line_image_classifier.checkpoint import (
     save_checkpoint,
     save_corrupted_files,
 )
+from ocr_line_image_classifier.utils import save_transcript
 
 OUTPUT_DIR = Path("./tests/test_data/updated_transcript")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -34,14 +35,6 @@ def load_image(image_path):
         print(f"Error loading image: {image_path}")
         save_corrupted_files(image_path, f"Error loading image: {e}")
         return None
-
-
-def save_transcript(transcript_df, output_csv_path):
-    """Save the updated transcript DataFrame to a CSV file."""
-    transcript_df.to_csv(output_csv_path, index=False)
-    print(
-        f"OCR and similarity calculation completed. Updated CSV saved as '{output_csv_path}'."
-    )
 
 
 def update_transcript_dataframe(transcript_df, image_dir):
@@ -76,6 +69,7 @@ def update_transcript_dataframe(transcript_df, image_dir):
         ocr_texts.append(ocr_text)
         similarity_scores.append(similarity_score)
 
+    transcript_df["ocr_text"] = ocr_texts
     transcript_df["similarity_score"] = similarity_scores
 
     return transcript_df
@@ -92,7 +86,8 @@ def process_images_and_transcripts(transcript_csv_path, image_dir):
     transcript_df = pd.read_csv(transcript_csv_path)
     updated_transcript_df = update_transcript_dataframe(transcript_df, image_dir)
     output_csv_path = OUTPUT_DIR / f"{transcript_csv_path.name}"
-    save_transcript(updated_transcript_df, output_csv_path)
+    output_json_path = OUTPUT_DIR / f"{transcript_csv_path.stem}.json"
+    save_transcript(updated_transcript_df, output_csv_path, output_json_path)
 
 
 def process_batch(batch_info):
@@ -131,9 +126,14 @@ def process_batches_parallel(image_folder, transcript_folder, num_processes=4):
     return results
 
 
-if __name__ == "__main__":
+"""if __name__ == "__main__":
 
     image_folder = "./data/norbuketaka/images"
     transcript_folder = "./data/norbuketaka/transcript"
     num_processes = 4
     results = process_batches_parallel(image_folder, transcript_folder, num_processes)
+"""
+if __name__ == "__main__":
+    image_folder = Path("./data/line_image_with_issue/images")
+    transcript_csv = Path("./data/line_image_with_issue/transcript/transcript.csv")
+    process_images_and_transcripts(transcript_csv, image_folder)

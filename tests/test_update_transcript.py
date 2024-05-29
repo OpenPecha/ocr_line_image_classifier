@@ -26,4 +26,8 @@ def test_process_images_and_transcripts():
     output_csv_path = OUTPUT_DIR / f"{transcript_csv_path.name}"
     output_df = pd.read_csv(output_csv_path)
     assert output_df.shape[0] == 7
-    assert output_df.shape[1] == 5
+    assert output_df.shape[1] == 6
+
+
+if __name__ == "__main__":
+    test_similarity_score()

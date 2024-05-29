@@ -1,0 +1,4 @@
+data/line_image_with_issue/images/I1KG136150578_5.tif-Error loading image
+data/line_image_with_issue/images/I1KG136150578_6.tif-Error loading image
+data/line_image_with_issue/images/I1KG136150578_5.tif-Error loading image
+data/line_image_with_issue/images/I1KG136150578_6.tif-Error loading image
