@@ -82,13 +82,16 @@ def classify_transcripts(transcript_df, similarity_threshold):
     transcript_df["ocr_text"] = (
         transcript_df["ocr_text"].fillna("").astype(str).str.strip()
     )
+    transcript_df["pre_processsed_ocr_text"] = (
+        transcript_df["pre_processsed_ocr_text"].fillna("").astype(str).str.strip()
+    )
 
     high_similarity_rows = transcript_df[
         (transcript_df["similarity_score"] >= similarity_threshold)
-        & (~transcript_df["ocr_text"].str.contains("\n"))
+        & (~transcript_df["pre_processsed_ocr_text"].str.contains("\n"))
     ]
     low_similarity_rows = transcript_df[
         (transcript_df["similarity_score"] < similarity_threshold)
-        | (transcript_df["ocr_text"].str.contains("\n"))
+        | (transcript_df["pre_processsed_ocr_text"].str.contains("\n"))
     ]
     return high_similarity_rows, low_similarity_rows
