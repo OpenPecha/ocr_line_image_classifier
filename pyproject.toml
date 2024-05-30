@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "project_name"
+name = "ocr_line_image_classifier"
 version = "0.0.1"
 authors = [
   { name="OpenPecha", email="dev@openpecha.org" },
@@ -15,6 +15,16 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+]
+dependencies = [
+    "Levenshtein==0.25.1",
+    "numpy",
+    "pandas",
+    "pytesseract==0.3.10",
+    "python-Levenshtein==0.25.1",
+    "tqdm==4.66.4",
+    "line-image-to-text @ git+https://github.com/OpenPecha/image-to-text.git@main",
+    "opencv-python"
 ]
 
 [project.optional-dependencies]
