@@ -3,8 +3,11 @@ from pathlib import Path
 
 import cv2
 import Levenshtein
+import numpy as np
 import pandas as pd
+import pytesseract
 from line_image_to_text.ocr_line_image_and_rearrange_json import ocr_process_image
+from PIL import Image
 from tqdm import tqdm
 
 from ocr_line_image_classifier.checkpoint import (
@@ -16,6 +19,55 @@ from ocr_line_image_classifier.utils import save_transcript
 
 OUTPUT_DIR = Path("./tests/test_data/updated_transcript")
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+
+
+def preprocess_image(image_path):
+    """Preprocess the image for better OCR accuracy."""
+    # Load the image using OpenCV
+    image = cv2.imread(str(image_path))
+
+    # Convert to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Resize image to improve DPI
+    height, width = gray.shape
+    gray = cv2.resize(gray, (width * 2, height * 2), interpolation=cv2.INTER_LINEAR)
+
+    # Apply median blurring to reduce noise
+    blurred = cv2.medianBlur(gray, 3)
+
+    # Apply adaptive thresholding
+    adaptive_threshold = cv2.adaptiveThreshold(
+        blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2
+    )
+
+    # Sharpen image
+    kernel = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]])
+    sharpened = cv2.filter2D(adaptive_threshold, -1, kernel)
+
+    return sharpened
+
+
+def get_ocr_text(image_path):
+
+    preprocessed_image = preprocess_image(image_path)
+
+    # Save the preprocessed image with correct DPI using PIL
+    binary_pil = Image.fromarray(preprocessed_image)
+    temp_image_path = f"temp_{image_path.name}"
+    binary_pil.save(temp_image_path, dpi=(300, 300))
+    binary_pil_with_dpi = Image.open(temp_image_path)
+
+    # Use pytesseract to extract text directly from the PIL image with correct DPI
+    custom_oem_psm_config = r"--oem 3 --psm 4"
+    text = pytesseract.image_to_string(
+        binary_pil_with_dpi, lang="bod", config=custom_oem_psm_config
+    )
+    Path(temp_image_path).unlink()  # Delete the temporary image file
+
+    return text.strip()
+
+    # Optionally, delete the temporary image file
 
 
 def calculate_similarity(text1, text2):
@@ -48,6 +100,7 @@ def update_transcript_dataframe(transcript_df, image_dir):
     Returns:
     - pd.DataFrame: Updated DataFrame with OCR results and similarity scores.
     """
+    pre_processsed_ocr_texts = []
     ocr_texts = []
     similarity_scores = []
 
@@ -60,15 +113,20 @@ def update_transcript_dataframe(transcript_df, image_dir):
         image = load_image(image_file)
 
         if image is not None:
+            pre_processsed_ocr_text = get_ocr_text(image_file)
             ocr_text = ocr_process_image(image_file)
             similarity_score = calculate_similarity(expected_text, ocr_text)
+
         else:
+            pre_processsed_ocr_text = ""
             ocr_text = ""
             similarity_score = 0
 
+        pre_processsed_ocr_texts.append(pre_processsed_ocr_text)
         ocr_texts.append(ocr_text)
         similarity_scores.append(similarity_score)
 
+    transcript_df["pre_processed_ocr_text"] = pre_processsed_ocr_texts
     transcript_df["ocr_text"] = ocr_texts
     transcript_df["similarity_score"] = similarity_scores
 
