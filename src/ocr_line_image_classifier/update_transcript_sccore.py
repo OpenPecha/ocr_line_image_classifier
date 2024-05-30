@@ -126,7 +126,7 @@ def update_transcript_dataframe(transcript_df, image_dir):
         ocr_texts.append(ocr_text)
         similarity_scores.append(similarity_score)
 
-    transcript_df["pre_processsed_ocr_text"] = pre_processsed_ocr_texts
+    transcript_df["pre_processed_ocr_text"] = pre_processsed_ocr_texts
     transcript_df["ocr_text"] = ocr_texts
     transcript_df["similarity_score"] = similarity_scores
 

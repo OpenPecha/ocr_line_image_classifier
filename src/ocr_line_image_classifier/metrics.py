@@ -6,11 +6,13 @@ def calculate_metrics(transcript_df, similarity_threshold):
     tp = fp = tn = fn = 0
 
     # Ensure all ocr_text entries are strings and handle missing values
-    transcript_df["ocr_text"] = transcript_df["ocr_text"].fillna("").astype(str)
+    transcript_df["pre_processed_ocr_text"] = (
+        transcript_df["pre_processed_ocr_text"].fillna("").astype(str)
+    )
 
     for _, row in transcript_df.iterrows():
         similarity_score = row["similarity_score"]
-        ocr_text = row["ocr_text"].strip()
+        ocr_text = row["pre_processed_ocr_text"].strip()
 
         has_newline_in_middle = "\n" in ocr_text
 
@@ -82,16 +84,16 @@ def classify_transcripts(transcript_df, similarity_threshold):
     transcript_df["ocr_text"] = (
         transcript_df["ocr_text"].fillna("").astype(str).str.strip()
     )
-    transcript_df["pre_processsed_ocr_text"] = (
-        transcript_df["pre_processsed_ocr_text"].fillna("").astype(str).str.strip()
+    transcript_df["pre_processed_ocr_text"] = (
+        transcript_df["pre_processed_ocr_text"].fillna("").astype(str).str.strip()
     )
 
     high_similarity_rows = transcript_df[
         (transcript_df["similarity_score"] >= similarity_threshold)
-        & (~transcript_df["pre_processsed_ocr_text"].str.contains("\n"))
+        & (~transcript_df["pre_processed_ocr_text"].str.contains("\n"))
     ]
     low_similarity_rows = transcript_df[
         (transcript_df["similarity_score"] < similarity_threshold)
-        | (transcript_df["pre_processsed_ocr_text"].str.contains("\n"))
+        | (transcript_df["pre_processed_ocr_text"].str.contains("\n"))
     ]
     return high_similarity_rows, low_similarity_rows

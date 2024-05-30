@@ -24,7 +24,8 @@ dependencies = [
     "python-Levenshtein==0.25.1",
     "tqdm==4.66.4",
     "line-image-to-text @ git+https://github.com/OpenPecha/image-to-text.git@main",
-    "opencv-python"
+    "opencv-python",
+    "pillow"
 ]
 
 [project.optional-dependencies]

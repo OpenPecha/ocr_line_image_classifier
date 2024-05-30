@@ -1,4 +1,4 @@
-source,line_image_id,repo_name,text,pre_processsed_ocr_text,ocr_text,similarity_score
+source,line_image_id,repo_name,text,pre_processed_ocr_text,ocr_text,similarity_score
 W1KG17605/I1KG17918/I1KG179180085,I1KG179180085_11.tif,I67D0B33C,པའི་སྒོ་ནས་བདག་མདུན་བུམ་གསུམ་གྱིས་རང་གཞན་ལ་ཚོགས་གཉིས་,པའི་སྒོ་ནས་བདག་མདུན་བུམ་གསུམ་གྱིས་རང་གཞན་ལ་ཆོགས་གཉིས་,"ཁོ
 
 པའི་སྒོ ནས་བདག་མདུན་བུམ་གསུམ་གྱིས་རང་གཞན་ལ་ཚོགས་གཉིས་",0.9285714285714286
